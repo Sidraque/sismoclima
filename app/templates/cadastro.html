@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - SismoClima</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            max-width: 480px;
+            width: 100%;
+            padding: 48px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #888;
+            margin-bottom: 32px;
+            font-size: 0.95em;
+        }
+        
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            font-size: 0.9em;
+            line-height: 1.6;
+            color: #aaa;
+        }
+        
+        .info-box strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            color: #aaa;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 1em;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        input::placeholder {
+            color: #555;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .example {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 6px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .back-link a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+        
+        .back-link a:hover {
+            color: #667eea;
+        }
+        
+        .alert {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+        
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro</h2>
+        <p class="subtitle">Configure seus alertas em 3 passos</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="info-box">
+            <strong>Como funciona</strong>
+            1. Preencha seus dados<br>
+            2. Complete o cadastro no Telegram<br>
+            3. Receba alertas automaticamente
+        </div>
+        
+        <form method="POST" action="/cadastro">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    required 
+                    placeholder="Seu nome completo"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Telefone</label>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    required 
+                    placeholder="5581999999999"
+                >
+                <div class="example">
+                    Formato: código do país + DDD + número
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="city">Cidade</label>
+                <input 
+                    type="text" 
+                    id="city" 
+                    name="city" 
+                    required 
+                    placeholder="Sua cidade"
+                >
+            </div>
+            
+            <button type="submit">Continuar</button>
+        </form>
+        
+        <div class="back-link">
+            <a href="/">Voltar</a>
+        </div>
+    </div>
+</body>
+</html>

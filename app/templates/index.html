@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SismoClima - Sistema de Alertas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .logo {
+            font-size: 2em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.1em;
+            color: #888;
+            font-weight: 300;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 80px 60px;
+            text-align: center;
+            margin-bottom: 60px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero h1 {
+            font-size: 2.5em;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            color: #aaa;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 48px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 60px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-4px);
+        }
+        
+        .feature h3 {
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .feature p {
+            color: #aaa;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 30px;
+            }
+            
+            .hero h1 {
+                font-size: 2em;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">SISMOCLIMA</div>
+            <p class="tagline">Sistema Inteligente de Monitoramento</p>
+        </header>
+        
+        <div class="hero">
+            <h1>Alertas em Tempo Real</h1>
+            <p>
+                Receba notificações instantâneas via Telegram sobre terremotos 
+                e condições meteorológicas extremas na sua região
+            </p>
+            <a href="/cadastro" class="cta-button">Começar Agora</a>
+            <div class="badge">Via Telegram · Gratuito</div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>Alertas Sísmicos</h3>
+                <p>
+                    Notificações automáticas de terremotos com magnitude 
+                    superior a 5.0 em tempo real
+                </p>
+            </div>
+            
+            <div class="feature">
+                <h3>Clima Extremo</h3>
+                <p>
+                    Avisos sobre tempestades severas, furacões e outras 
+                    condições meteorológicas perigosas
+                </p>
+            </div>
+            
+            <div class="feature">
+                <h3>Bot Interativo</h3>
+                <p>
+                    Consulte informações a qualquer momento através de 
+                    comandos simples no Telegram
+                </p>
+            </div>
+            
+            <div class="feature">
+                <h3>Cobertura Global</h3>
+                <p>
+                    Monitoramento 24/7 usando dados do USGS e OpenWeather 
+                    para máxima precisão
+                </p>
+            </div>
+            
+            <div class="feature">
+                <h3>Instantâneo</h3>
+                <p>
+                    Alertas enviados automaticamente assim que eventos 
+                    são detectados pelos sistemas
+                </p>
+            </div>
+            
+            <div class="feature">
+                <h3>Sem Custos</h3>
+                <p>
+                    Completamente gratuito, sem limites de uso ou 
+                    mensalidades ocultas
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
