@@ -24,23 +24,18 @@ class EventMonitor:
         logger.info("🔍 EventMonitor inicializado")
     
     def check_earthquakes(self):
-        try:
-            logger.info("🌍 Verificando terremotos...")
-            
+        try:            
             earthquakes = self.usgs.get_recent_earthquakes(hours=1)
             
             if not earthquakes:
-                logger.info("✅ Nenhum terremoto significativo detectado")
                 return
             
             latest = earthquakes[0]
             earthquake_id = self._generate_earthquake_id(latest)
             
             if earthquake_id == self.last_earthquake_id:
-                logger.info(f"⏭️ Terremoto ja alertado: {earthquake_id}")
                 return
             
-            logger.warning(f"🚨 NOVO TERREMOTO: Magnitude {latest['magnitude']}")
             
             self.last_earthquake_id = earthquake_id
             self._send_earthquake_alerts(latest)
@@ -50,15 +45,11 @@ class EventMonitor:
     
     def check_weather(self):
         try:
-            logger.info("☁️ Verificando clima...")
             
             users = User.query.filter_by(active=True, confirmed=True).filter(User.telegram_chat_id.isnot(None)).all()
             
             if not users:
-                logger.info("ℹ️ Nenhum usuario ativo com Telegram")
                 return
-            
-            logger.info(f"👥 Verificando clima para {len(users)} usuarios")
             
             cities = {}
             for user in users:

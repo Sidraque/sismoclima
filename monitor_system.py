@@ -6,12 +6,10 @@ import os
 
 
 def clear_screen():
-    """Limpa a tela do terminal"""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def print_header():
-    """Imprime cabeçalho do dashboard"""
     print("=" * 70)
     print("🌍 SISMOCLIMA - DASHBOARD ADMINISTRATIVO".center(70))
     print("=" * 70)
@@ -19,7 +17,6 @@ def print_header():
 
 
 def get_user_statistics():
-    """Retorna estatísticas de usuários"""
     total_users = User.query.count()
     confirmed_users = User.query.filter_by(confirmed=True).count()
     active_users = User.query.filter_by(active=True, confirmed=True).count()
@@ -35,7 +32,6 @@ def get_user_statistics():
 
 
 def get_alert_statistics(hours=24):
-    """Retorna estatísticas de alertas"""
     time_threshold = datetime.utcnow() - timedelta(hours=hours)
     
     total_alerts = AlertLog.query.filter(AlertLog.sent_at >= time_threshold).count()

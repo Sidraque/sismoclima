@@ -15,8 +15,52 @@ class MonitorScheduler:
         self.telegram = TelegramService()
         self.last_earthquake_id = None
         self.app = app
+            
+    def send_status_update(self):
+        if self.app:
+            with self.app.app_context():
+                self._do_send_status()
+        else:
+            self._do_send_status()
+    
+    def _do_send_status(self):
+        from app.models import User, db
         
-        print("Scheduler inicializado")
+        now = datetime.now()
+        timestamp = now.strftime('%H:%M:%S')
+                
+        users = User.query.filter_by(active=True, confirmed=True).filter(User.telegram_chat_id.isnot(None)).all()
+        
+        if not users:
+            return
+        
+        earthquakes = self.usgs.get_recent_earthquakes(hours=24)
+        
+        msg = f"<b>Status do Sistema</b>\n"
+        msg += f"Horario: {now.strftime('%d/%m/%Y %H:%M:%S')}\n\n"
+        
+        if earthquakes:
+            latest = earthquakes[0]
+            msg += f"<b>Ultimo Terremoto:</b>\n"
+            msg += f"• Magnitude: {latest['magnitude']}\n"
+            msg += f"• Local: {latest['location']}\n"
+            msg += f"• Quando: {latest['time'].strftime('%d/%m %H:%M')}\n\n"
+        else:
+            msg += "<b>Ultimo Terremoto:</b>\n"
+            msg += "• Nenhum evento nas ultimas 24h\n\n"
+        
+        msg += f"<b>Monitoramento:</b>\n"
+        msg += f"• Sistema: Online\n"
+        msg += f"• Usuarios ativos: {len(users)}\n"
+        msg += f"• Proxima verificacao: 1 minuto"
+        
+        # Enviar para todos
+        success_count = 0
+        for user in users:
+            if self.telegram.send_message(user.telegram_chat_id, msg):
+                success_count += 1
+        
+        print(f"Status enviado para {success_count}/{len(users)} usuarios")
     
     def check_earthquakes(self):
         if self.app:
@@ -28,7 +72,6 @@ class MonitorScheduler:
     def _do_check_earthquakes(self):
         from app.models import User, AlertLog, db
         
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] Verificando terremotos...")
         earthquakes = self.usgs.get_recent_earthquakes(hours=1)
         
         if earthquakes:
@@ -37,13 +80,12 @@ class MonitorScheduler:
             
             if earthquake_id != self.last_earthquake_id:
                 self.last_earthquake_id = earthquake_id
-                print(f"NOVO TERREMOTO: Magnitude {latest['magnitude']}")
                 self._send_earthquake_alerts(latest, User, AlertLog, db)
             else:
-                print("Terremoto ja alertado")
+                return
         else:
-            print("Nenhum terremoto significativo")
-    
+            return
+        
     def check_weather(self):
         if self.app:
             with self.app.app_context():
@@ -53,13 +95,10 @@ class MonitorScheduler:
     
     def _do_check_weather(self):
         from app.models import User, AlertLog, db
-        
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] Verificando clima...")
-        
+                
         users = User.query.filter_by(active=True, confirmed=True).filter(User.telegram_chat_id.isnot(None)).all()
         
         if not users:
-            print("Nenhum usuario ativo")
             return
         
         cities = {}
@@ -72,14 +111,13 @@ class MonitorScheduler:
             weather = self.weather.get_current_weather(city)
             
             if weather and self.weather.has_severe_conditions(weather):
-                print(f"CONDICAO SEVERA: {city}")
                 self._send_weather_alerts(city_users, weather, AlertLog, db)
             else:
-                print(f"Clima normal em: {city}")
+                return
     
     def _send_earthquake_alerts(self, earthquake, User, AlertLog, db):
         users = User.query.filter_by(active=True, confirmed=True).filter(User.telegram_chat_id.isnot(None)).all()
-        message = self.usgs.format_earthquake_message(earthquake)
+        message = "ALERTA SISMICO\n\n" + self.usgs.format_earthquake_message(earthquake)
         
         success_count = 0
         for user in users:
@@ -122,11 +160,15 @@ class MonitorScheduler:
         print(f"Alertas clima: {success_count}/{len(users)}")
     
     def start(self):
-        # Agendar verificacoes a cada 1 minuto
+        schedule.every(1).minutes.do(self.send_status_update)
+        
         schedule.every(1).minutes.do(self.check_earthquakes)
         schedule.every(1).minutes.do(self.check_weather)
         
-        print("Scheduler ativo - Verificacoes a cada 1 minuto")
+        print("Scheduler ativo:")
+        print("• Status automatico: 1 minuto")
+        print("• Verificacao terremotos: 1 minuto")
+        print("• Verificacao clima: 1 minuto")
         
         while True:
             schedule.run_pending()

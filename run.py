@@ -6,6 +6,7 @@ Sistema Web + Bot Telegram + Scheduler
 
 import threading
 import time
+import os
 from app import create_app
 from automation.scheduler import MonitorScheduler
 from services.telegram_service import TelegramService
@@ -19,14 +20,34 @@ scheduler = MonitorScheduler(app=app)
 
 # Telegram
 telegram = TelegramService()
-last_update_id = 0
+
+# Arquivo para salvar ultimo update
+UPDATE_FILE = 'last_update.txt'
+
+
+def load_last_update_id():
+    """Carrega o ultimo update_id salvo"""
+    if os.path.exists(UPDATE_FILE):
+        try:
+            with open(UPDATE_FILE, 'r') as f:
+                return int(f.read().strip())
+        except:
+            return 0
+    return 0
+
+
+def save_last_update_id(update_id):
+    """Salva o ultimo update_id processado"""
+    with open(UPDATE_FILE, 'w') as f:
+        f.write(str(update_id))
 
 
 def telegram_bot_loop():
     """Loop do bot Telegram em background"""
-    global last_update_id
+    # Carregar ultimo update processado
+    last_update_id = load_last_update_id()
     
-    print("🤖 Bot Telegram iniciado!")
+    print(f"Bot Telegram iniciado (ultimo update: {last_update_id})")
     
     while True:
         try:
@@ -42,6 +63,9 @@ def telegram_bot_loop():
                     
                     last_update_id = update_id
                     
+                    # Salvar imediatamente
+                    save_last_update_id(last_update_id)
+                    
                     # Processar mensagem
                     if 'message' in update:
                         with app.app_context():
@@ -49,19 +73,17 @@ def telegram_bot_loop():
                             chat_id = message['chat']['id']
                             text = message.get('text', '')
                             
-                            print(f"📩 Telegram [{chat_id}]: {text}")
+                            print(f"[{chat_id}] {text}")
                             
                             if text.startswith('/start'):
                                 handle_start(chat_id, message)
-                                print("✅ Resposta enviada!")
                             elif text.startswith('/'):
                                 handle_command(chat_id, text)
-                                print("✅ Resposta enviada!")
             
-            time.sleep(2)  # Verificar a cada 2 segundos
+            time.sleep(2)
             
         except Exception as e:
-            print(f"⚠️ Erro no bot: {e}")
+            print(f"Erro no bot: {e}")
             time.sleep(5)
 
 
@@ -70,23 +92,22 @@ if __name__ == '__main__':
     app.config['SERVER_NAME'] = None
     
     # Iniciar scheduler em background
-    print("📅 Iniciando scheduler...")
+    print("Iniciando scheduler...")
     scheduler.start_background()
     
     # Iniciar bot Telegram em background
-    print("🤖 Iniciando bot Telegram...")
+    print("Iniciando bot Telegram...")
     bot_thread = threading.Thread(target=telegram_bot_loop, daemon=True)
     bot_thread.start()
     
     # Iniciar aplicacao Flask
     print("\n" + "="*60)
-    print("🚀 SISMOCLIMA ONLINE!")
+    print("SISMOCLIMA ONLINE")
     print("="*60)
-    print("📍 Site Local: http://localhost:5000")
-    print("📍 Site Rede: http://192.168.0.76:5000")
-    print("🤖 Bot: @sismoclima_bot")
-    print("📊 Status: Monitorando terremotos e clima")
-    print("⏹️  Para parar: CTRL + C")
+    print("Site: http://localhost:5000")
+    print("Rede: http://192.168.0.76:5000")
+    print("Bot: Telegram")
+    print("Status: Monitorando (1 min)")
     print("="*60 + "\n")
     
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
